@@ -19,10 +19,9 @@
 
 	# Serve CA certificate for client apps (must come before forward_proxy)
 	handle /ca-certificate {
-		file_server {
-			root /data/caddy/pki/authorities/local
-			try_files root.crt
-		}
+		root * /data/caddy/pki/authorities/local
+		rewrite * /root.crt
+		file_server
 		header Content-Type "application/x-pem-file"
 		header Content-Disposition "attachment; filename=caddy-ca.crt"
 	}
