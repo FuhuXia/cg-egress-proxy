@@ -9,9 +9,22 @@
 		level {$CADDY_LOG_LEVEL:INFO}
 	}
 	auto_https off
+	# Configure TLS to generate Python 3.13 compatible certificates
+	local_certs
 }
 
 :{$PORT} {
+	# Generate self-signed certificates compatible with Python 3.13
+	tls internal
+
+	# Serve CA certificate for client apps
+	handle /ca-certificate {
+		root * /data/caddy/pki/authorities/local
+		file_server
+		rewrite * /root.crt
+		header Content-Type "application/x-pem-file"
+	}
+
 	forward_proxy {
 		basic_auth {$PROXY_USERNAME} {$PROXY_PASSWORD}
 		probe_resistance
