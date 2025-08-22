@@ -18,11 +18,15 @@
 	tls internal
 
 	# Serve CA certificate for client apps
-	handle /ca-certificate {
+	@ca_request path /ca-certificate
+	handle @ca_request {
 		root * /data/caddy/pki/authorities/local
-		file_server
 		rewrite * /root.crt
+		file_server {
+			hide .*
+		}
 		header Content-Type "application/x-pem-file"
+		header Content-Disposition "attachment; filename=caddy-ca.crt"
 	}
 
 	forward_proxy {
