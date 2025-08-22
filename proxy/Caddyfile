@@ -17,13 +17,11 @@
 	# Generate self-signed certificates compatible with Python 3.13
 	tls internal
 
-	# Serve CA certificate for client apps
-	@ca_request path /ca-certificate
-	handle @ca_request {
-		root * /data/caddy/pki/authorities/local
-		rewrite * /root.crt
+	# Serve CA certificate for client apps (must come before forward_proxy)
+	handle /ca-certificate {
 		file_server {
-			hide .*
+			root /data/caddy/pki/authorities/local
+			try_files root.crt
 		}
 		header Content-Type "application/x-pem-file"
 		header Content-Disposition "attachment; filename=caddy-ca.crt"
